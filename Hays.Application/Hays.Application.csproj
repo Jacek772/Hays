@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="MediatR" Version="12.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Functions\QueryHandlers\" />
-    <Folder Include="Functions\Query\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Hays.Domain\Hays.Domain.csproj" />
+    <ProjectReference Include="..\Hays.Infrastructure\Hays.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace Hays.Domain.Entities
+﻿using Hays.Domain.Entities.Abstracts;
+
+namespace Hays.Domain.Entities
 {
     public class IncomeDefinition : BaseEntitiy
     {

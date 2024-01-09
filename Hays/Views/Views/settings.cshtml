@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    ViewData["Page"] = "Home";
+}
+
+<script>
+    if (!isUserLogged()) {
+        window.location.href = "/views/login"
+    }
+</script>
+
+<h1>Settings</h1>

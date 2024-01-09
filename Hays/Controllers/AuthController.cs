@@ -1,5 +1,6 @@
 ﻿using Hays.Application.DTO;
 using Hays.Application.Functions.Commands;
+using Hays.Controllers.Abstracts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,20 +8,16 @@ namespace Hays.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : AppControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AuthController(IMediator mediator)
+        public AuthController(IMediator mediator) : base(mediator)
         {
-            _mediator = mediator;
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<LoginDTO>> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        [HttpPost("signin")]
+        public async Task<ActionResult<LoginDTO>> Login([FromBody] LoginCommand command)
         {
-            LoginCommand loginCommand = new LoginCommand();
-            return await _mediator.Send(loginCommand);
+            return await _mediator.Send(command);
         }
     }
 }

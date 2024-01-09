@@ -3,6 +3,12 @@
   ViewData["Page"] = "Home";
 }
 
+<script>
+    if (isUserLogged()) {
+        window.location.href = "/views/dashboard"
+    }
+</script>
+
 <div class="mask h-100">
   <div class="container">
     <div class="row d-flex justify-content-center">

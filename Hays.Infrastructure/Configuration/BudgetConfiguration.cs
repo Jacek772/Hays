@@ -23,10 +23,12 @@ namespace Hays.Infrastructure.Configuration
 
             builder
                 .Property(x => x.PlannedExpenses)
+                .HasPrecision(14, 2)
                 .IsRequired();
 
             builder
                .Property(x => x.PlannedIncome)
+               .HasPrecision(14, 2)
                .IsRequired();
 
             builder

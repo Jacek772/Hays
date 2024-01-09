@@ -28,6 +28,7 @@ namespace Hays.Infrastructure.Configuration
 
             builder
                 .Property(x => x.Amount)
+                .HasPrecision(14, 2)
                 .IsRequired();
 
             // Relationships

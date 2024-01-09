@@ -10,5 +10,29 @@ namespace Hays.Controllers
         {
             return View();
         }
+
+        [HttpGet("login")]
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpGet("register")]
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpGet("dashboard")]
+        public ActionResult Dashboard()
+        {
+            return View();
+        }
+
+        [HttpGet("settings")]
+        public ActionResult Settings()
+        {
+            return View();
+        }
     }
 }
