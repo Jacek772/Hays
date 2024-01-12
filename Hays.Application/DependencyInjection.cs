@@ -19,6 +19,7 @@ namespace Hays.Application
             services.AddScoped<IExpenseDefinitionsService, ExpenseDefinitionsService>();
             services.AddScoped<IBudgetsService, BudgetsService>();
             services.AddScoped<IPasswordHasherService, PasswordHasherService>();
+            services.AddScoped<ISpendingGoalsService, SpendingGoalsService>();
 
             // Seeds
             services.AddScoped<UsersSeed>();

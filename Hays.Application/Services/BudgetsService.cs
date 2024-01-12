@@ -120,7 +120,7 @@ namespace Hays.Application.Services
 
         public async Task UpdateBudgetAsync(UpdateBudgetCommand updateBudgetCommand)
         {
-            Budget budget = await _applicationDbContext.Budgets.FirstOrDefaultAsync(x => x.Id == updateBudgetCommand.BudgetId);
+            Budget budget = await _applicationDbContext.Budgets.FirstOrDefaultAsync(x => x.Id == updateBudgetCommand.Id);
             if (budget is null)
             {
                 throw new BadRequestException("Expense does not exists");
@@ -130,9 +130,25 @@ namespace Hays.Application.Services
             {
                 try
                 {
-                    budget.PlannedExpenses = updateBudgetCommand.PlannedExpenses is null ? budget.PlannedExpenses : (decimal)updateBudgetCommand.PlannedExpenses;
-                    budget.PlannedIncome = updateBudgetCommand.PlannedIncome is null ? budget.PlannedIncome : (decimal)updateBudgetCommand.PlannedIncome;
-                    budget.State = updateBudgetCommand.State is null ? budget.State : (BudgetState)updateBudgetCommand.State;
+                    if(updateBudgetCommand.BudgetValue is decimal budgetValue)
+                    {
+                        budget.BudgetValue = budgetValue;
+                    }
+
+                    if(updateBudgetCommand.State is BudgetState state)
+                    {
+                        budget.State = state;
+                    }
+
+                    if(updateBudgetCommand.PlannedExpenses is  decimal plannedExpenses)
+                    {
+                        budget.PlannedExpenses = plannedExpenses;
+                    }
+
+                    if (updateBudgetCommand.PlannedIncome is decimal plannedIncome)
+                    {
+                        budget.PlannedIncome = plannedIncome;
+                    }
 
                     _applicationDbContext.Budgets.Update(budget);
                     await _applicationDbContext.SaveChangesAsync();

@@ -15,6 +15,11 @@ namespace Hays.Application.Services
             _applicationDbContext = applicationDbContext;
         }
 
+        public async Task<List<IncomeDefinition>> GetIncomeDefinitionsAsync()
+        {
+            return await _applicationDbContext.IncomeDefinitions.ToListAsync();
+        }
+
         public async Task CreateIncomeDefinitionAsync(IncomeDefinition incomeDefinition)
         {
             using (IDbContextTransaction transaction = _applicationDbContext.Database.BeginTransaction())
@@ -47,6 +52,27 @@ namespace Hays.Application.Services
                 {
                     await transaction.RollbackAsync();
                     throw new Exception("IncomeDefinitions create error");
+                }
+            }
+        }
+
+        public async Task DeleteIncomeDefinitionAsync(int id)
+        {
+            using (IDbContextTransaction transaction = _applicationDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    IncomeDefinition incomeDefinition = await _applicationDbContext.IncomeDefinitions
+                        .FirstOrDefaultAsync(x => x.Id == id);
+
+                    _applicationDbContext.IncomeDefinitions.Remove(incomeDefinition);
+                    await _applicationDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception("IncomeDefinition delete error");
                 }
             }
         }

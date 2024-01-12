@@ -19,10 +19,13 @@
         public DateTime DateTo { get; set; }
         public BudgetState State { get; set; }
         public BudgetType Type { get; set; }
-        public decimal PlannedExpenses { get; set; }
-        public decimal PlannedIncome { get; set; }
         public decimal Income { get; set; }
         public decimal Expense { get; set; }
+        public decimal BudgetValue { get; set; }
+        public decimal Balance => Income - Expense;
+
+        public decimal Savings => Balance >= decimal.Zero ? Balance : decimal.Zero;
+
 
         public List<IncomeDTO> Incomes { get; set; } = new List<IncomeDTO>();
         public List<ExpenseDTO> Expenses { get; set; } = new List<ExpenseDTO>();

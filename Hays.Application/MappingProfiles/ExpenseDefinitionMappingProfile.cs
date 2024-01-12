@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Hays.Application.DTO;
+using Hays.Application.Functions.Commands;
 using Hays.Domain.Entities;
 
 namespace Hays.Application.MappingProfiles
@@ -9,6 +10,7 @@ namespace Hays.Application.MappingProfiles
         public ExpenseDefinitionMappingProfile()
         {
             CreateMap<ExpenseDefinition, ExpenseDefinitionDTO>();
+            CreateMap<CreateExpenseDefinitionCommand, ExpenseDefinition>();
         }
     }
 }

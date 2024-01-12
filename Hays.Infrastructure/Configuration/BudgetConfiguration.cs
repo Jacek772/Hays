@@ -32,6 +32,11 @@ namespace Hays.Infrastructure.Configuration
                .IsRequired();
 
             builder
+               .Property(x => x.BudgetValue)
+               .HasPrecision(14, 2)
+               .IsRequired();
+
+            builder
                 .Property(x => x.State)
                 .IsRequired()
                 .HasDefaultValue(Budget.BudgetState.Open);

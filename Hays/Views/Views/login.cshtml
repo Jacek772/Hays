@@ -3,12 +3,6 @@
     ViewData["Page"] = "Login";
 }
 
-<script>
-    if (localStorage.getItem("token")) {
-        window.location.href = "/views/dashboard"
-    }
-</script>
-
 <div class="mask d-flex align-items-center h-100">
     <div class="container">
         <!-- Outer Row -->
@@ -74,5 +68,6 @@
     </div>
 
 @section scripts {
+    <script type="text/javascript" src="~/js/utils.js"></script>
     <script type="text/javascript" src="~/js/login.js"></script>
 }

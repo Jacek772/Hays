@@ -1,13 +1,16 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    if (await isUserLogged()) {
+        window.location.href = "/views/dashboard"
+    }  
+})
+
+document.addEventListener("DOMContentLoaded", async () => {
     const loginForm = document.getElementById("loginForm");
 
     loginForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const loginEmailInput = document.getElementById("loginEmailInput").value;
         const loginPasswordInput = document.getElementById("loginPasswordInput").value;
-
-        console.log(loginEmailInput)
-        console.log(loginPasswordInput)
 
         fetch("/api/auth/signin", {
             method: "POST",

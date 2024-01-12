@@ -4463,6 +4463,7 @@ input[type="button"].btn-block {
   flex: 1 1 auto;
   min-height: 1px;
   padding: 1.25rem;
+  box-sizing: border-box;
 }
 
 .card-title {
@@ -11004,4 +11005,11 @@ form.form-io .btn-user {
 
 .modal-io label {
   margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+
+/* Library styles fixes */
+
+#budgets-dashboard-table_wrapper, #incomes-outcomes-dashboard-table_wrapper {
+    width: 99%;
 }

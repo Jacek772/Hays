@@ -18,14 +18,14 @@ namespace Hays.Application.Seeds
                         Date = new DateTime(DateTime.Now.Year, 1, 10),
                         Name = "Salary 01.2023",
                         Description = "Monthly main work salary",
-                        Amount = 2000m
+                        Amount = 4000m
                     },
                     new Income
                     {
                         Date = new DateTime(DateTime.Now.Year, 2, 9),
                         Name = "Salary 02.2023",
                         Description = "Monthly Salary",
-                        Amount = 2200m
+                        Amount = 3200m
                     },
                     new Income
                     {
@@ -38,7 +38,7 @@ namespace Hays.Application.Seeds
                         Date = new DateTime(DateTime.Now.Year, 3, 10),
                         Name = "Salary 03.2023",
                         Description = "Monthly Salary",
-                        Amount = 2100m
+                        Amount = 2700m
                     },
                     new Income
                     {
@@ -52,14 +52,14 @@ namespace Hays.Application.Seeds
                         Date = new DateTime(DateTime.Now.Year, 5, 10),
                         Name = "Salary 05.2023",
                         Description = "Monthly Salary",
-                        Amount = 2400m
+                        Amount = 2900m
                     },
                     new Income
                     {
                         Date = new DateTime(DateTime.Now.Year, 6, 10),
                         Name = "Salary 06.2023",
                         Description = "Monthly Salary",
-                        Amount = 2000m
+                        Amount = 2400m
                     }
                 }
             },

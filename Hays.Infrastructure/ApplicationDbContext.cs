@@ -19,6 +19,7 @@ namespace Hays.Infrastructure
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<IncomeDefinition> IncomeDefinitions { get; set; }
         public DbSet<Income> Incomes { get; set; }
+        public DbSet<SpendingGoal> SpendingGoals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

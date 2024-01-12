@@ -3,13 +3,6 @@
   ViewData["Page"] = "Dashboard";
 }
 
-<script>
-    if(!isUserLogged())
-    {
-        window.location.href = "/views/login"
-    }
-</script>
-
 <div id="wrapper">
   <ul class="navbar-nav bg-gradient-hays sidebar sidebar-dark accordion" id="accordionSidebar">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="home">
@@ -227,17 +220,13 @@
               <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg" />
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="/views/settings">
                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                 Profile
               </a>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="/views/settings">
                 <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                 Settings
-              </a>
-              <a class="dropdown-item" href="#">
-                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                Activity Log
               </a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -251,10 +240,11 @@
 
       <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-          <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-          <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm"
-            ><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a
-          >
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+     @*       <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-info shadow-sm">
+                <i class="fas fa-download fa-sm text-white-50"></i> 
+                Generate Report
+            </a>*@
         </div>
 
         <div class="row">
@@ -264,15 +254,16 @@
                 <div class="row no-gutters align-items-center">
                   <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                      Current budget - January 2023
+                      Current budget <span id="currentBudgtMonthSpan"></span>
                     </div>
                     <div class="row no-gutters align-items-center">
                       <div class="col-auto">
-                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
+                        <div id="currentBudgtMonthPercentsDiv"
+                            class="h5 mb-0 mr-3 font-weight-bold text-gray-800"></div>
                       </div>
                       <div class="col">
                         <div class="progress progress-sm mr-2">
-                          <div
+                          <div id="currentBudgtMonthProgressBarDiv"
                             class="progress-bar bg-info"
                             role="progressbar"
                             style="width: 50%"
@@ -295,22 +286,13 @@
                 <div class="row no-gutters align-items-center">
                   <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-brick text-uppercase mb-1">
-                      Earnings - Monthly / Annual
+                      Incomes - Monthly / Annual
                     </div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">40,000 zł / 215,000 zł</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-              <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                  <div class="col mr-2">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Something here</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">Some text here</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">  
+                        <span id="earingsMonthlySpan"></span> zł
+                        /
+                        <span id="earingsAnnualSpan"></span> zł
+                    </div>
                   </div>
                 </div>
               </div>
@@ -323,7 +305,9 @@
                 <div class="row no-gutters align-items-center">
                   <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-grass text-uppercase mb-1">Savings</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">18,043.23 zł</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <span id="savingsValueSpan"></span> zł
+                        </div>
                   </div>
                 </div>
               </div>
@@ -467,10 +451,57 @@
                   </table>
                 </div>
               </div>
+
+
+            <div class="col-xl-12">
+                <div class="card shadow mb-4">
+                  <div class="card-header py-3 px-4 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-grass">Spending goals</h6>
+                  </div>
+
+                  <div class="p-3 mx-3 d-flex flex-row align-items-center justify-content-end border-bottom-gray">
+                                        <button id="addIncomeButton" class="btn btn-brick btn-icon-split mr-3" data-toggle="modal" data-target="#addSpendingGoalModal">
+                      <span class="icon text-white-50">
+                        <i class="fa-solid fa-scale-unbalanced"></i>
+                      </span>
+                        <span class="text">Add New Spending goal</span>
+                    </button>
+                  </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                          <table
+                            class="table table-bordered"
+                            id="incomes-outcomes-dashboard-table"
+                            width="100%"
+                            cellspacing="0"
+                          >
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Amount</th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                            <tbody id="tbodySpendingGoals">
+
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                </div>
+            </div>
+
+              
+
+
             </div>
           </div>
         </div>
       </div>
+
+
     </div>
   </div>
 
@@ -527,6 +558,7 @@
                 class="form-control form-control-add-io my-2"
                 id="addIncomeTitleInput"
                 placeholder="Title"
+                required="required"
               />
             </div>
             <div class="col-12">
@@ -535,14 +567,20 @@
                 class="form-control form-control-add-io my-2"
                 id="addIncomeDescriptionInput"
                 placeholder="Description"
+                required="required"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="date"
+                class="form-control form-control-add-io my-2"
+                id="addIncomeDateInput"
+                required="required"
               />
             </div>
             <div class="col-12">
               <label for="addIncomeTypeSelect">Income type</label>
               <select name="addIncomeTypeSelect" id="addIncomeTypeSelect">
-                <option value="1">Salary</option>
-                <option value="2">Benefit</option>
-                <option value="3">Casual job</option>
               </select>
             </div>
             <div class="col-12">
@@ -564,6 +602,7 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <div
@@ -590,6 +629,7 @@
                 type="text"
                 class="form-control form-control-add-io my-2"
                 id="addOutcomeTitleInput"
+                required="required"
                 placeholder="Title"
               />
             </div>
@@ -598,15 +638,21 @@
                 type="text"
                 class="form-control form-control-add-io my-2"
                 id="addOutcomeDescriptionInput"
+                required="required"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="date"
+                class="form-control form-control-add-io my-2"
+                id="addOutcomeDateInput"
+                required="required"
                 placeholder="Description"
               />
             </div>
              <div class="col-12">
               <label for="addOutcomeTypeSelect">Outcome type</label>
               <select name="addOutcomeTypeSelect" id="addOutcomeTypeSelect">
-                <option value="1">Grocery shopping</option>
-                <option value="2">Internet</option>
-                <option value="3">Rent</option>
               </select>
             </div>
             <div class="col-12">
@@ -614,6 +660,7 @@
                 type="number"
                 class="form-control form-control-add-io my-2"
                 id="addOutcomeAmountInput"
+                required="required"
                 placeholder="Amount"
               />
             </div>
@@ -630,6 +677,64 @@
   </div>
 </div>
 
+<div
+  class="modal fade modal-io"
+  id="addSpendingGoalModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="addSpendingGoalModal"
+  aria-hidden="true"
+  >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content px-3">
+      <div class="modal-header pt-4">
+        <h5 class="modal-title text-grass">Add New Spending goal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body pt-3">
+        <form id="addSpendingGoalModalForm" class="form-io">
+          <div class="form-group row">
+            <div class="col-12">
+              <input
+                type="text"
+                class="form-control form-control-add-io my-2"
+                id="addSpendingGoalModalTitleInput"
+                required="required"
+                placeholder="Title"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="date"
+                class="form-control form-control-add-io my-2"
+                id="addSpendingGoalModalDateInput"
+                required="required"
+                placeholder="Description"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="number"
+                class="form-control form-control-add-io my-2"
+                id="addSpendingGoalModalAmountInput"
+                required="required"
+                placeholder="Amount"
+              />
+            </div>
+            <div id="addSpendingGoalModalAlert" class="alert alert-danger w-100" style="display: none;">
+            </div>
+          </div>
+          <div class="modal-footer pb-2">
+            <button type="submit" class="btn btn-warning">Save</button>
+            <button type="submit" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal fade modal-io"
         id="successModal"
@@ -653,5 +758,6 @@
 </div>
 
 @section scripts {
-        <script type="text/javascript" src="~/js/dashboard.js"></script>
+    <script type="text/javascript" src="~/js/utils.js"></script>
+    <script type="text/javascript" src="~/js/dashboard.js"></script>
 }

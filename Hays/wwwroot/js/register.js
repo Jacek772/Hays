@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    if (await isUserLogged()) {
+        window.location.href = "/views/dashboard"
+    }
+})
+
+document.addEventListener("DOMContentLoaded", async () => {
     const registerForm = document.getElementById("registerForm");
 
     registerForm?.addEventListener("submit", (e) => {
@@ -26,10 +32,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     surname: registerLastNameInput,
                 }),
             })
-                //.then((resp) => resp.json())
                 .then(() => {
                     //registerForm.reset()
-                    alert("U¿ytkownik zosta³ utworzony!")
+                    //alert("U¿ytkownik zosta³ utworzony!")
                 });
         } else {
             console.log("Passwords don't match");

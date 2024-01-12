@@ -18,16 +18,12 @@ namespace Hays.Domain.Entities
         }
 
         public DateTime DateFrom { get; set; } = DateTime.Now;
-
         public DateTime DateTo { get; set; } = DateTime.Now;
-
         public decimal PlannedExpenses { get; set; }
-
         public decimal PlannedIncome { get; set; }
-
         public BudgetState State { get; set; } = BudgetState.Open;
-
         public BudgetType Type { get; set; } = BudgetType.Yearly;
+        public decimal BudgetValue { get; set; }
 
         public int? ParentId { get; set; }
         public Budget? Parent { get; set; }

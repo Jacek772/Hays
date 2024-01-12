@@ -13,11 +13,8 @@ namespace Hays.Controllers
     [Authorize]
     public class IncomesController : AppControllerBase
     {
-        private readonly IMapper _mapper;
-
-        public IncomesController(IMediator mediator, IMapper mapper) : base(mediator)
+        public IncomesController(IMediator mediator) : base(mediator)
         {
-            _mapper = mapper;
         }
 
         [HttpGet]

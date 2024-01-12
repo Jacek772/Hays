@@ -13,11 +13,8 @@ namespace Hays.Controllers
     [Authorize]
     public class ExpensesController : AppControllerBase
     {
-        private readonly IMapper _mapper;
-
-        public ExpensesController(IMediator mediator, IMapper mapper) : base(mediator)
+        public ExpensesController(IMediator mediator) : base(mediator)
         {
-            _mapper = mapper;
         }
 
         [HttpGet]

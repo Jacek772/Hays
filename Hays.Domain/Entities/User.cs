@@ -17,5 +17,6 @@ namespace Hays.Domain.Entities
         public string? Surname { get; set; }
 
         public ICollection<Budget> Budgets { get; set; } = default!;
+        public ICollection<SpendingGoal> SpendingGoals { get; set; } = default!;
     }
 }

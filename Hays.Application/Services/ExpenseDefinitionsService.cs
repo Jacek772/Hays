@@ -15,6 +15,11 @@ namespace Hays.Application.Services
             _applicationDbContext = applicationDbContext;
         }
 
+        public async Task<List<ExpenseDefinition>> GetExpenseDefinitionsAsync()
+        {
+            return await _applicationDbContext.ExpenseDefinitions.ToListAsync();
+        }
+
         public async Task CreateExpenseDefinitionAsync(ExpenseDefinition expenseDefinition)
         {
             using (IDbContextTransaction transaction = _applicationDbContext.Database.BeginTransaction())
@@ -47,6 +52,27 @@ namespace Hays.Application.Services
                 {
                     await transaction.RollbackAsync();
                     throw new Exception("ExpenseDefinition create error");
+                }
+            }
+        }
+
+        public async Task DeleteExpenseDefinitionAsync(int id)
+        {
+            using (IDbContextTransaction transaction = _applicationDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    ExpenseDefinition expenseDefinition = await _applicationDbContext.ExpenseDefinitions
+                        .FirstOrDefaultAsync(x => x.Id == id);
+
+                    _applicationDbContext.ExpenseDefinitions.Remove(expenseDefinition);
+                    await _applicationDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception("ExpenseDefinition delete error");
                 }
             }
         }

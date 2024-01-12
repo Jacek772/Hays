@@ -27,10 +27,10 @@ namespace Hays.Application.Functions.QueryHandlers
         {
             List<Budget> budgets = await _budgetsService.GetBudgetsAsync(request);
             List<BudgetDTO> budgetsDTO = _mapper.Map<List<Budget>, List<BudgetDTO>>(budgets);
-            return await CalculateBudgetsIncomeAndExpense(budgetsDTO);
+            return await CalculateBudgetsIncomeAndExpense(budgets, budgetsDTO);
         }
 
-        private async Task<List<BudgetDTO>> CalculateBudgetsIncomeAndExpense(List<BudgetDTO> budgetsDTO)
+        private async Task<List<BudgetDTO>> CalculateBudgetsIncomeAndExpense(List<Budget> budgets, List<BudgetDTO> budgetsDTO)
         {
             foreach (BudgetDTO budgetDTO in budgetsDTO)
             {
@@ -49,6 +49,12 @@ namespace Hays.Application.Functions.QueryHandlers
 
                 budgetDTO.Income = incomes.Sum(x => x.Amount);
                 budgetDTO.Expense = expenses.Sum(x => x.Amount);
+
+                if(budgetDTO.Type == BudgetDTO.BudgetType.Yearly)
+                {
+                    Budget budget = budgets.FirstOrDefault(x => x.Id == budgetDTO.Id);
+                    budgetDTO.BudgetValue = budget.Children.Sum(x => x.BudgetValue);
+                }
             }
             return budgetsDTO;
         }
