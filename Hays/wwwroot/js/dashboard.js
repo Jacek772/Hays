@@ -165,7 +165,7 @@ const initSpendingGoalsTable = async () => {
         const rowDate = new Date(spendingGoal.date)
         const cellDate = document.createElement("td")
         row.appendChild(cellDate)
-        cellDate.innerText = [rowDate.getFullYear(), rowDate.getMonth() + 1, rowDate.getDate() + 1].join("/") 
+        cellDate.innerText = [rowDate.getFullYear(), rowDate.getMonth() + 1, rowDate.getDate()].join("/") 
 
         const cellTitle = document.createElement("td")
         row.appendChild(cellTitle)
@@ -441,7 +441,7 @@ const calculateStatisticsCards = async () => {
     const earingsMonthlySpan = document.getElementById("earingsMonthlySpan")
     const earingsAnnualSpan = document.getElementById("earingsAnnualSpan")
 
-    earingsMonthlySpan.innerText = Math.round((actualYearBudget.income / 12) * 100) / 100
+    earingsMonthlySpan.innerText = Math.round((actualYearBudget.income / (new Date().getMonth() + 1)) * 100) / 100
     earingsAnnualSpan.innerText = actualYearBudget.income
 
     // Savings
@@ -495,7 +495,7 @@ const generateTableIO = (data, operationType) => {
     for (let i = 0; i < data.length; i++) {
         const rowDate = new Date(data[i].date);
         const rowDataArray = [
-            [rowDate.getFullYear(), rowDate.getMonth() + 1, rowDate.getDate() + 1].join("/"),
+            [rowDate.getFullYear(), rowDate.getMonth() + 1, rowDate.getDate()].join("/"),
             data[i].definition.name,
             data[i].name,
             data[i].description,

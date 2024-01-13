@@ -14,21 +14,21 @@ namespace Hays.Application.Seeds
                 new Expense[] {
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 1, 13),
+                        Date = new DateTime(DateTime.Now.Year - 1, 1, 13),
                         Name = "Shopping",
                         Description = "Shopping",
                         Amount = 200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 2, 17),
+                        Date = new DateTime(DateTime.Now.Year - 1, 2, 17),
                         Name = "Shopping",
                         Description = "Shopping",
                         Amount = 700m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 3, 20),
+                        Date = new DateTime(DateTime.Now.Year - 1, 3, 20),
                         Name = "Shopping",
                         Description = "Shopping",
                         Amount = 50m
@@ -41,42 +41,84 @@ namespace Hays.Application.Seeds
                 {
                     new Expense
                     {
+                        Date = new DateTime(DateTime.Now.Year - 1, 1, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 2, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 3, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 4, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 5, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 6, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 7, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 8, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 9, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 10, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
+                        Date = new DateTime(DateTime.Now.Year - 1, 11, 7),
+                        Name = "Internet",
+                        Description = "Monthly internet",
+                        Amount = 80m
+                    },
+                    new Expense
+                    {
                         Date = new DateTime(DateTime.Now.Year, 1, 7),
-                        Name = "Internet",
-                        Description = "Monthly internet",
-                        Amount = 80m
-                    },
-                    new Expense
-                    {
-                        Date = new DateTime(DateTime.Now.Year, 2, 7),
-                        Name = "Internet",
-                        Description = "Monthly internet",
-                        Amount = 80m
-                    },
-                    new Expense
-                    {
-                        Date = new DateTime(DateTime.Now.Year, 3, 7),
-                        Name = "Internet",
-                        Description = "Monthly internet",
-                        Amount = 80m
-                    },
-                    new Expense
-                    {
-                        Date = new DateTime(DateTime.Now.Year, 4, 7),
-                        Name = "Internet",
-                        Description = "Monthly internet",
-                        Amount = 80m
-                    },
-                    new Expense
-                    {
-                        Date = new DateTime(DateTime.Now.Year, 5, 7),
-                        Name = "Internet",
-                        Description = "Monthly internet",
-                        Amount = 80m
-                    },
-                    new Expense
-                    {
-                        Date = new DateTime(DateTime.Now.Year, 6, 7),
                         Name = "Internet",
                         Description = "Monthly internet",
                         Amount = 80m
@@ -88,42 +130,42 @@ namespace Hays.Application.Seeds
                 new Expense[] {
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 1, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 1, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 2, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 2, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 3, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 3, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 4, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 4, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 5, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 5, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
                     },
                     new Expense
                     {
-                        Date = new DateTime(DateTime.Now.Year, 6, 15),
+                        Date = new DateTime(DateTime.Now.Year - 1, 6, 15),
                         Name = "Rent",
                         Description = "Monthly flat rent",
                         Amount = 2200m
