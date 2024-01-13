@@ -30,18 +30,18 @@ namespace Hays.Application.Services
             _passwordHasherService = passwordHasherService;
         }
 
-        public async Task CreateUserAsync(CreateUserCommand createUserCommand)
+        public async Task<User> CreateUserAsync(CreateUserCommand createUserCommand)
         {
+            User user;
             using (IDbContextTransaction transaction = _applicationDbContext.Database.BeginTransaction())
             {
                 try
                 {
                     byte[] salt = _passwordHasherService.GenerateRandomSalt(_authenticationConfiguration.SaltSize);
 
-                    User user = new User
+                    user = new User
                     {
                         Email = createUserCommand.Email,
-                        Login = createUserCommand.Login,
                         Password = _passwordHasherService.HashPassword(createUserCommand.Password, salt),
                         Salt = salt,
                         Name = createUserCommand.Name,
@@ -57,6 +57,7 @@ namespace Hays.Application.Services
                     throw new Exception("User create error");
                 }
             }
+            return user;
         }
 
         public async Task CreateUserAsync(User user)
@@ -118,11 +119,6 @@ namespace Hays.Application.Services
                     if(updateUserCommand.Email is string email)
                     {
                         user.Email = email;
-                    }
-
-                    if(updateUserCommand.Login is string login)
-                    {
-                        user.Login = login;
                     }
 
                     if (updateUserCommand.Name is string name)

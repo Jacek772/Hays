@@ -84,88 +84,6 @@ namespace Hays.Application.Services
             return expensesList.GetRange((page - 1) * pageSize, pageSize);
         }
 
-        public async Task<List<Expense>> GetExpensesAsync(int userId, string searchPhrase, int page = 0, int pageSize = 0)
-        {
-            if (page <= 0 && pageSize > 0)
-            {
-                throw new BadRequestException($"Bad {nameof(page)} parameter. Parametere cannot be null if {nameof(pageSize)} is not null.");
-            }
-
-            if (page > 0 && pageSize <= 0)
-            {
-                throw new BadRequestException($"Bad {nameof(pageSize)} parameter. Parametere cannot be null if {nameof(page)} is not null.");
-            }
-
-            List<Expense> expenses = await _applicationDbContext.Expenses
-                .Include(x => x.Definition)
-                .Include(x => x.Budget)
-                .Where(x => x.Budget.UserId == userId)
-                .Where(x => EF.Functions.Like(x.Date.ToString(), $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Name, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Description, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Definition.Name, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Definition.Description, $"%{searchPhrase}%")
-                )
-                .ToListAsync();
-
-            if (page == 0 && pageSize == 0)
-            {
-                return expenses;
-            }
-
-            int pagesCount = (int)Math.Ceiling(expenses.Count / (double)pageSize);
-            int index = (page - 1) * pageSize;
-            if (index >= expenses.Count)
-            {
-                return new List<Expense>();
-            }
-
-            if (index + pageSize >= expenses.Count)
-            {
-                return expenses.GetRange(index, expenses.Count - index);
-            }
-
-            return expenses.GetRange((page - 1) * pageSize, pageSize);
-        }
-
-        public async Task<List<Expense>> GetExpensesAsync(int userId, int page = 0, int pageSize = 0)
-        {
-            if (page <= 0 && pageSize > 0)
-            {
-                throw new BadRequestException($"Bad {nameof(page)} parameter. Parametere cannot be null if {nameof(pageSize)} is not null.");
-            }
-
-            if (page > 0 && pageSize <= 0)
-            {
-                throw new BadRequestException($"Bad {nameof(pageSize)} parameter. Parametere cannot be null if {nameof(page)} is not null.");
-            }
-
-            List<Expense> expenses = await _applicationDbContext.Expenses
-                .Include(x => x.Definition)
-                .Include(x => x.Budget)
-                .Where(x => x.Budget.UserId == userId)
-                .ToListAsync();
-
-            if (page == 0 && pageSize == 0)
-            {
-                return expenses;
-            }
-
-            int pagesCount = (int)Math.Ceiling(expenses.Count / (double)pageSize);
-            int index = (page - 1) * pageSize;
-            if (index >= expenses.Count)
-            {
-                return new List<Expense>();
-            }
-
-            if (index + pageSize >= expenses.Count)
-            {
-                return expenses.GetRange(index, expenses.Count - index);
-            }
-
-            return expenses.GetRange((page - 1) * pageSize, pageSize);
-        }
-
         public async Task<Expense> GetExpenseAsync(int userId, int expenseId)
         {
             return await _applicationDbContext.Expenses
@@ -237,16 +155,6 @@ namespace Hays.Application.Services
                     throw new Exception("Expense update error");
                 }
             }
-        }
-
-        public async Task<bool> ExistsExpenseAsync(string definitonName, DateTime dateTime, string name)
-        {
-            Expense expense = await _applicationDbContext.Expenses
-                .Include(x => x.Definition)
-                .FirstOrDefaultAsync(x => x.Name == name
-                    && x.Date == dateTime
-                    && x.Definition.Name == definitonName);
-            return expense is not null;
         }
 
         public async Task<bool> ExistsAsync()

@@ -77,19 +77,6 @@ namespace Hays.Application.Services
             }
         }
 
-        public async Task<bool> ExistsExpenseDefinitionAsync(string name)
-        {
-            ExpenseDefinition expenseDefinition = await _applicationDbContext.ExpenseDefinitions
-                .FirstOrDefaultAsync(x => x.Name == name);
-            return expenseDefinition is not null;
-        }
-
-        public async Task<ExpenseDefinition> GetExpenseDefinitionAsync(int expenseDefinitionId)
-        {
-            return await _applicationDbContext.ExpenseDefinitions
-                .FirstOrDefaultAsync(x => x.Id == expenseDefinitionId);
-        }
-
         public async Task<ExpenseDefinition> GetExpenseDefinitionAsync(string name)
         {
             return await _applicationDbContext.ExpenseDefinitions

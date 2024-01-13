@@ -22,16 +22,6 @@ namespace Hays.Infrastructure.Configuration
                 .HasDefaultValue(DateTime.Now);
 
             builder
-                .Property(x => x.PlannedExpenses)
-                .HasPrecision(14, 2)
-                .IsRequired();
-
-            builder
-               .Property(x => x.PlannedIncome)
-               .HasPrecision(14, 2)
-               .IsRequired();
-
-            builder
                .Property(x => x.BudgetValue)
                .HasPrecision(14, 2)
                .IsRequired();

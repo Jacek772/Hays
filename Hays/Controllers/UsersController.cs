@@ -41,6 +41,7 @@ namespace Hays.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult> CreateUser([FromBody] CreateUserCommand command)
         {
             await _mediator.Send(command);

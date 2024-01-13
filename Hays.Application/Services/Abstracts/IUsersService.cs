@@ -5,7 +5,7 @@ namespace Hays.Application.Services.Abstracts
 {
     public interface IUsersService
     {
-        Task CreateUserAsync(CreateUserCommand createUserCommand);
+        Task<User> CreateUserAsync(CreateUserCommand createUserCommand);
         Task CreateUserAsync(User user);
         Task<bool> ExistsUserAsync(string email);
         Task<List<User>> GetUsersAsync();

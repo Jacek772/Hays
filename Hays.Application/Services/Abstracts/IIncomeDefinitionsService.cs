@@ -8,9 +8,7 @@ namespace Hays.Application.Services.Abstracts
         Task CreateIncomeDefinitionAsync(IncomeDefinition incomeDefinition);
         Task CreateIncomeDefinitionsAsync(IEnumerable<IncomeDefinition> incomeDefinitions);
         Task DeleteIncomeDefinitionAsync(int id);
-        Task<IncomeDefinition> GetIncomeDefinitionAsync(int incomeDefinitionId);
         Task<IncomeDefinition> GetIncomeDefinitionAsync(string name);
-        Task<bool> ExistsIncomeDefinitionAsync(string name);
         Task<bool> ExistsAsync();
     }
 }

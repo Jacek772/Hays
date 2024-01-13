@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
     if (!(await isUserLogged())) {
-        //window.location.href = "/views/login"
+        window.location.href = "/views/login"
     }
 })
 
@@ -16,10 +16,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const incomesButton = document.getElementById("incomesButton");
     const outcomesButton = document.getElementById("outcomesButton");
 
-    monthlyButton?.addEventListener("click", () => (token ? getBudgets(token, "Monthly") : null));
-    annualButton?.addEventListener("click", () => (token ? getBudgets(token, "Annual") : null));
-    incomesButton?.addEventListener("click", () => (token ? getIncomes(token) : null));
-    outcomesButton?.addEventListener("click", () => (token ? getExpenses(token) : null));
+    monthlyButton?.addEventListener("click", async () => {
+        await getBudgets(token, "Monthly")
+    })
+
+    annualButton?.addEventListener("click", async () => {
+        await getBudgets(token, "Annual")
+    });
+
+    incomesButton?.addEventListener("click", async () => {
+        await getIncomes(token)
+    })
+
+    outcomesButton?.addEventListener("click", async () => {
+       await getExpenses(token)
+    })
 
     // AddIncomeFor
     await initAddIncomeForm()
@@ -44,10 +55,15 @@ const refreshPageData = async () => {
     await initAddIncomeForm()
     await initAddOutcomeForm()
     await calculateStatisticsCards()
+    await initSpendingGoalsTable()
     createCharts()
 }
 
 const initAddIncomeForm = async () => {
+    let addIncomeForm = document.getElementById("addIncomeForm");
+    addIncomeForm.replaceWith(addIncomeForm.cloneNode(true))
+    addIncomeForm = document.getElementById("addIncomeForm");
+
     const addIncomeTypeSelect = document.getElementById("addIncomeTypeSelect");
     addIncomeTypeSelect.innerHTML = ""
 
@@ -60,7 +76,6 @@ const initAddIncomeForm = async () => {
         addIncomeTypeSelect.appendChild(option)
     }
 
-    const addIncomeForm = document.getElementById("addIncomeForm");
     addIncomeForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -70,13 +85,14 @@ const initAddIncomeForm = async () => {
         const res = await addNewIncome(token)
         if (res.ok) {
             $("#addIncomeModal").modal("hide");
-            getIncomes(token)
-            await refreshPageData()
-
             addIncomeModalAlert.style.display = "none"
             addIncomeModalAlert.innerText = ""
             $("#successModal").modal("show");
             addIncomeForm.reset()
+
+            await getIncomes(token)
+            await refreshPageData()
+
         }
         else {
             addIncomeModalAlert.style.display = ""
@@ -86,6 +102,10 @@ const initAddIncomeForm = async () => {
 }
 
 const initAddOutcomeForm = async () => {
+    let addOutcomeForm = document.getElementById("addOutcomeForm");
+    addOutcomeForm.replaceWith(addOutcomeForm.cloneNode(true))
+    addOutcomeForm = document.getElementById("addOutcomeForm");
+
     const addOutcomeTypeSelect = document.getElementById("addOutcomeTypeSelect");
     addOutcomeTypeSelect.innerHTML = ""
 
@@ -98,7 +118,6 @@ const initAddOutcomeForm = async () => {
         addOutcomeTypeSelect.appendChild(option)
     }
 
-    const addOutcomeForm = document.getElementById("addOutcomeForm");
     addOutcomeForm?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -108,14 +127,13 @@ const initAddOutcomeForm = async () => {
         const res = await addNewOutcome(token)
         if (res.ok) {
             $("#addOutcomeModal").modal("hide");
-
-            getExpenses(token)
-            await refreshPageData()
-
             addOutcomeModalAlert.style.display = "none"
             addOutcomeModalAlert.innerText = ""
             $("#successModal").modal("show");
             addOutcomeForm.reset()
+
+            await getExpenses(token)
+            await refreshPageData()
         }
         else {
             addOutcomeModalAlert.style.display = ""
@@ -125,8 +143,6 @@ const initAddOutcomeForm = async () => {
 }
 
 const initSpendingGoalsTable = async () => {
-    const user = await getCurrentUser()
-
     const token = localStorage.getItem("token");
     const res = await fetch("/api/spendinggoals", {
         method: "GET",
@@ -180,8 +196,7 @@ const initSpendingGoalsTable = async () => {
             })
 
             if (resDelete.ok) {
-                $("#successModal").modal("show");
-                await initSpendingGoalsTable()
+                await refreshPageData()
             }
             else {
                 alert("Error")
@@ -191,7 +206,10 @@ const initSpendingGoalsTable = async () => {
 }
 
 const initAddSpendingGoalsForm = () => {
-    const addSpendingGoalModalForm = document.getElementById("addSpendingGoalModalForm")
+    let addSpendingGoalModalForm = document.getElementById("addSpendingGoalModalForm")
+    addSpendingGoalModalForm.replaceWith(addSpendingGoalModalForm.cloneNode(true))
+    addSpendingGoalModalForm = document.getElementById("addSpendingGoalModalForm")
+
     addSpendingGoalModalForm?.addEventListener("submit", async (e) => {
         e.preventDefault()
 
@@ -216,8 +234,9 @@ const initAddSpendingGoalsForm = () => {
         if (res.ok) {
             $("#addSpendingGoalModal").modal("hide");
             $("#successModal").modal("show");
+
             addSpendingGoalModalForm.reset()
-            await initSpendingGoalsTable()
+            await refreshPageData()
         }
         else {
             alert("Error")
@@ -371,10 +390,10 @@ const toggleBudgetsButtons = (budgetsType) => {
 };
 
 // get monthly or annual budgets
-function getBudgets(token, budgetType) {
+async function getBudgets(token, budgetType) {
     const type = budgetType === "Monthly" ? 1 : 0;
 
-    fetch(`/api/budgets?budgetType=${type}`, {
+    await fetch(`/api/budgets?budgetType=${type}`, {
         method: "GET",
         headers: {
             Accept: "text/plain",
@@ -407,7 +426,10 @@ const calculateStatisticsCards = async () => {
     const spanCurrentBudgtMonth = document.getElementById("currentBudgtMonthSpan")
     spanCurrentBudgtMonth.innerText = `${getMonthName(dateNow.getMonth())} ${dateNow.getFullYear()}`
 
-    const budgetPercent = Math.round((actualMonthBudge.expense / actualMonthBudge.budgetValue) * 100)
+    let budgetPercent = 0
+    if (actualMonthBudge.budgetValue > 0) {
+        budgetPercent = Math.round((actualMonthBudge.expense / actualMonthBudge.budgetValue) * 100)
+    }
 
     const currentBudgtMonthProgressBarDiv = document.getElementById("currentBudgtMonthProgressBarDiv")
     currentBudgtMonthProgressBarDiv.style.width = `${budgetPercent}%`
@@ -419,15 +441,24 @@ const calculateStatisticsCards = async () => {
     const earingsMonthlySpan = document.getElementById("earingsMonthlySpan")
     const earingsAnnualSpan = document.getElementById("earingsAnnualSpan")
 
-    // Trzeba sumowaæ pensje
-
-
     earingsMonthlySpan.innerText = Math.round((actualYearBudget.income / 12) * 100) / 100
     earingsAnnualSpan.innerText = actualYearBudget.income
 
     // Savings
     const savingsValueSpan = document.getElementById("savingsValueSpan")
     savingsValueSpan.innerText = actualYearBudget.savings
+
+    // Spending goals
+    const spendingGoalsValueSumSpan = document.getElementById("spendingGoalsValueSumSpan")
+
+    const spendingGoals = await getUserSpendingGoals()
+
+    console.log(spendingGoals)
+
+    const spendingGoalsSum = spendingGoals.reduce((acc, x) => {
+        return acc + x.amount
+    }, 0)
+    spendingGoalsValueSumSpan.innerText = spendingGoalsSum.toString()
 }
 
 
@@ -489,15 +520,13 @@ const generateTableIO = (data, operationType) => {
         btnDelete.addEventListener("click", async () => {
             const token = localStorage.getItem("token");
             if (operationType == "Income") {
-                $("#successModal").modal("show");
                 await deleteIncome(data[i].id)
-                getIncomes(token)
+                await getIncomes(token)
                 await refreshPageData()
             }
             else if (operationType == "Outcome") {
-                $("#successModal").modal("show");
                 await deleteOutcome(data[i].id)
-                getExpenses(token)
+                await getExpenses(token)
                 await refreshPageData()
             }
         })
@@ -606,8 +635,8 @@ async function addNewOutcome(token) {
 }
 
 // get expenses
-function getExpenses(token) {
-    fetch("/api/expenses", {
+async function getExpenses(token) {
+    await fetch("/api/expenses", {
         method: "GET",
         headers: {
             Accept: "text/plain",
@@ -624,8 +653,8 @@ function getExpenses(token) {
 }
 
 // get incomes
-function getIncomes(token) {
-    fetch("/api/incomes", {
+async function getIncomes(token) {
+    await fetch("/api/incomes", {
         method: "GET",
         headers: {
             Accept: "text/plain",
@@ -785,7 +814,7 @@ async function createCharts() {
             ],
             datasets: [
                 {
-                    label: "Revenue",
+                    label: "Outcome",
                     backgroundColor: "#00861d",
                     hoverBackgroundColor: "#2e59d9",
                     borderColor: "#00861d",

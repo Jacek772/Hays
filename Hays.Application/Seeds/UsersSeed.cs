@@ -35,7 +35,6 @@ namespace Hays.Application.Seeds
                 Email = _authenticationConfiguration.AdminEmail,
                 Name = _authenticationConfiguration.AdminLogin,
                 Surname = _authenticationConfiguration.AdminLogin,
-                Login = _authenticationConfiguration.AdminLogin,
                 Password = _authenticationConfiguration.AdminPassword,
             };
             await _usersService.CreateUserAsync(user);

@@ -23,7 +23,7 @@ const initAccountData = async () => {
 
     const user = await getCurrentUser();
 
-    const keys = ["email", "login", "name", "surname"]
+    const keys = ["email", "name", "surname"]
 
     for (const key of keys) {
         const row = document.createElement("tr")
@@ -60,7 +60,7 @@ const initChangePasswordForm = async () => {
         }
 
         const token = localStorage.getItem("token");
-        const res = await fetch("/api/expensedefinitions", {
+        const res = await fetch("/api/users", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -171,7 +171,6 @@ const initIncomeDefinitionsForm = async () => {
 
         if (res.ok) {
             await initIncomeDefinitionsTable()
-            $("#successModal").modal("show");
             addIncomeDefinitionForm.reset()
         }
     })
@@ -212,7 +211,6 @@ const initIncomeDefinitionsTable = async () => {
 
             if (res.ok) {
                 await initIncomeDefinitionsTable()
-                $("#successModal").modal("show");
             }
             else {
                 alert("Cannot delete this expense definition")

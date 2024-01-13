@@ -41,7 +41,8 @@ namespace Hays.Application.Services
         {
             IQueryable<Income> incomes = _applicationDbContext.Incomes
                 .Include(x => x.Definition)
-                .Include(x => x.Budget);
+                .Include(x => x.Budget)
+                .Where(x => x.Budget.UserId == query.UserId);
 
             if (!string.IsNullOrEmpty(query.SearchPhrase) && !string.IsNullOrWhiteSpace(query.SearchPhrase))
             {
@@ -82,88 +83,6 @@ namespace Hays.Application.Services
 
             return incomesList.GetRange((page - 1) * pageSize, pageSize);
         }
-
-        public async Task<List<Income>> GetIncomesAsync(int userId, int page = 0, int pageSize = 0)
-        {
-            if (page <= 0 && pageSize > 0)
-            {
-                throw new BadRequestException($"Bad {nameof(page)} parameter. Parametere cannot be null if {nameof(pageSize)} is not null.");
-            }
-
-            if (page > 0 && pageSize <= 0)
-            {
-                throw new BadRequestException($"Bad {nameof(pageSize)} parameter. Parametere cannot be null if {nameof(page)} is not null.");
-            }
-
-            List<Income> incomes = await _applicationDbContext.Incomes
-                .Include(x => x.Definition)
-                .Include(x => x.Budget)
-                .Where(x => x.Budget.User.Id == userId)
-                .ToListAsync();
-
-            if (page == 0 && pageSize == 0)
-            {
-                return incomes;
-            }
-
-            int pagesCount = (int)Math.Ceiling(incomes.Count / (double)pageSize);
-            int index = (page - 1) * pageSize;
-            if (index >= incomes.Count)
-            {
-                return new List<Income>();
-            }
-
-            if (index + pageSize >= incomes.Count)
-            {
-                return incomes.GetRange(index, incomes.Count - index);
-            }
-
-            return incomes.GetRange((page - 1) * pageSize, pageSize);
-        }
-
-        public async Task<List<Income>> GetIncomesAsync(int userId, string searchPhrase, int page = 0, int pageSize = 0)
-        {
-            if (page <= 0 && pageSize > 0)
-            {
-                throw new BadRequestException($"Bad {nameof(page)} parameter. Parametere cannot be null if {nameof(pageSize)} is not null.");
-            }
-
-            if (page > 0 && pageSize <= 0)
-            {
-                throw new BadRequestException($"Bad {nameof(pageSize)} parameter. Parametere cannot be null if {nameof(page)} is not null.");
-            }
-
-            List<Income> incomes = await _applicationDbContext.Incomes
-                .Include(x => x.Definition)
-                .Include(x => x.Budget)
-                .Where(x => EF.Functions.Like(x.Date.ToString(), $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Name, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Description, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Definition.Name, $"%{searchPhrase}%")
-                    || EF.Functions.Like(x.Definition.Description, $"%{searchPhrase}%")
-                )
-                .ToListAsync();
-
-            if (page == 0 && pageSize == 0)
-            {
-                return incomes;
-            }
-
-            int pagesCount = (int)Math.Ceiling(incomes.Count / (double)pageSize);
-            int index = (page - 1) * pageSize;
-            if (index >= incomes.Count)
-            {
-                return new List<Income>();
-            }
-
-            if (index + pageSize >= incomes.Count)
-            {
-                return incomes.GetRange(index, incomes.Count - index);
-            }
-
-            return incomes.GetRange((page - 1) * pageSize, pageSize);
-        }
-
 
         public async Task<Income> GetIncomeAsync(int userId, int incomeId)
         {
@@ -236,14 +155,6 @@ namespace Hays.Application.Services
                     throw new Exception("Income update error");
                 }
             }
-        }
-
-        public async Task<bool> ExistsIncomeAsync(string definitonName, DateTime dateTime, string name)
-        {
-            Income income = await _applicationDbContext.Incomes
-                .Include(x => x.Definition)
-                .FirstOrDefaultAsync(x => x.Date == dateTime && x.Definition.Name == definitonName && x.Name == name);
-            return income is not null;
         }
 
         public async Task <bool> ExistsAsync()

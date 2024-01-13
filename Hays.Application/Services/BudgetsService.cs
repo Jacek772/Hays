@@ -25,7 +25,8 @@ namespace Hays.Application.Services
                 .Include(x => x.Incomes)
                 .ThenInclude(x => x.Definition)
                 .Include(x => x.Expenses)
-                .ThenInclude(x => x.Definition);
+                .ThenInclude(x => x.Definition)
+                .Include(x => x.Children);
 
             if(query.UserId is int userId)
             {
@@ -50,54 +51,6 @@ namespace Hays.Application.Services
             List<Budget> budgetsA = await budgets.ToListAsync();
 
             return await budgets.ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetUserBudgetsAsync(int userId)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId)
-                .ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetYearlyBudgetsAsync(int userId)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId && x.Type == BudgetType.Yearly)
-                .ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetMonthlyBudgetsAsync(int userId)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId && x.Type == BudgetType.Monthly)
-                .Include(x => x.Incomes)
-                .Include(x => x.Expenses)
-                .ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetYearlyBudgetsByDateAsync(int userId, DateTime? dateFrom, DateTime? dateTo)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId && x.Type == BudgetType.Yearly && x.DateFrom >= dateFrom && x.DateTo <= dateTo)
-                .ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetMonthlyBudgetsByDateAsync(int userId, DateTime? dateFrom, DateTime? dateTo)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId && x.Type == BudgetType.Monthly && x.DateFrom >= dateFrom && x.DateTo <= dateTo)
-                .Include(x => x.Incomes)
-                .Include(x => x.Expenses)
-                .ToListAsync();
-        }
-
-        public async Task<List<Budget>> GetBudgetsByDateAsync(int userId, DateTime? dateFrom, DateTime? dateTo)
-        {
-            return await _applicationDbContext.Budgets
-                .Where(x => x.UserId == userId && x.DateFrom >= dateFrom && x.DateTo <= dateTo)
-                .Include(x => x.Incomes)
-                .Include(x => x.Expenses)
-                .ToListAsync();
         }
 
         public async Task CreateBudgetAsync(Budget budget)
@@ -140,16 +93,6 @@ namespace Hays.Application.Services
                         budget.State = state;
                     }
 
-                    if(updateBudgetCommand.PlannedExpenses is  decimal plannedExpenses)
-                    {
-                        budget.PlannedExpenses = plannedExpenses;
-                    }
-
-                    if (updateBudgetCommand.PlannedIncome is decimal plannedIncome)
-                    {
-                        budget.PlannedIncome = plannedIncome;
-                    }
-
                     _applicationDbContext.Budgets.Update(budget);
                     await _applicationDbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
@@ -160,17 +103,6 @@ namespace Hays.Application.Services
                     throw new Exception("Budget update error");
                 }
             }
-        }
-
-        public async Task<bool> ExistsBudgetAsync(DateTime dateFrom, DateTime dateTo, BudgetType budgetType, int userId)
-        {
-            Budget budget = await _applicationDbContext.Budgets
-                .FirstOrDefaultAsync(x => x.UserId == userId
-                    && x.DateFrom == dateFrom
-                    && x.DateTo == dateTo
-                    && x.Type == budgetType
-                    && x.UserId == userId);
-            return budget is not null;
         }
 
         public async Task DeleteBudgetAsync(int budgetId)
@@ -206,6 +138,36 @@ namespace Hays.Application.Services
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.DateFrom.Year == year && x.Type == BudgetType.Yearly);
         }
 
+        public async Task InitBudgetsForUser(User user)
+        {
+            List<Budget> monthlyBudgets = new List<Budget>();
+            for (int i = 1; i <= 12; i++)
+            {
+                Budget newMonthlyBudget = new()
+                {
+                    DateFrom = new DateTime(DateTime.Now.Year, i, 01),
+                    DateTo = new DateTime(DateTime.Now.Year, i, DateTime.DaysInMonth(DateTime.Now.Year, i)),
+                    State = BudgetState.Open,
+                    Type = BudgetType.Monthly,
+                    UserId = user.Id,
+                    User = user,
+                };
+                monthlyBudgets.Add(newMonthlyBudget);
+            }
+
+            Budget newYearlyBudget = new()
+            {
+                DateFrom = new DateTime(DateTime.Now.Year, 01, 01),
+                DateTo = new DateTime(DateTime.Now.Year, 12, 31),
+                State = BudgetState.Open,
+                Type = BudgetType.Yearly,
+                UserId = user.Id,
+                Children = monthlyBudgets,
+                User = user,
+            };
+            await CreateBudgetAsync(newYearlyBudget);
+        }
+
         public async Task<int> GetBudgetIdForExpenseAsync(User user, Expense expense)
         {
             Budget monthlyBudget = await GetMonthlyBudgetAsync(user.Id, expense.Date);
@@ -216,65 +178,35 @@ namespace Hays.Application.Services
             }
             else
             {
-                Budget yearlyBudget = await GetYearlyBudgetAsync(user.Id, expense.Date.Year);
-                if (yearlyBudget is not null)
+                List<Budget> monthlyBudgets = new List<Budget>();
+                for (int i = 1; i <= 12; i++)
                 {
                     Budget newMonthlyBudget = new()
                     {
-                        DateFrom = new DateTime(expense.Date.Year, expense.Date.Month, 1),
-                        DateTo = new DateTime(expense.Date.Year, expense.Date.Month, DateTime.DaysInMonth(expense.Date.Year, expense.Date.Month)),
+                        DateFrom = new DateTime(expense.Date.Year, i, 1),
+                        DateTo = new DateTime(expense.Date.Year, i, DateTime.DaysInMonth(expense.Date.Year, i)),
                         State = BudgetState.Open,
                         Type = BudgetType.Monthly,
                         UserId = user.Id,
                         User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Parent = yearlyBudget,
-                        ParentId = yearlyBudget.Id,
-                        Expenses = new List<Expense>()
                     };
-                    newMonthlyBudget.Expenses.Add(expense);
-
-                    await CreateBudgetAsync(newMonthlyBudget);
-                    return newMonthlyBudget.Id;
+                    monthlyBudgets.Add(newMonthlyBudget);
                 }
-                else
+
+                Budget newYearlyBudget = new()
                 {
-                    Budget newYearlyBudget = new()
-                    {
-                        DateFrom = new DateTime(expense.Date.Year, 01, 01),
-                        DateTo = new DateTime(expense.Date.Year, 12, 31),
-                        State = BudgetState.Open,
-                        Type = BudgetType.Yearly,
-                        UserId = user.Id,
-                        User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Expenses = new List<Expense>()
-                    };
-                    newYearlyBudget.Expenses.Add(expense);
+                    DateFrom = new DateTime(expense.Date.Year, 01, 01),
+                    DateTo = new DateTime(expense.Date.Year, 12, 31),
+                    State = BudgetState.Open,
+                    Type = BudgetType.Yearly,
+                    UserId = user.Id,
+                    Children = monthlyBudgets,
+                    User = user,
+                };
+                await CreateBudgetAsync(newYearlyBudget);
 
-                    await CreateBudgetAsync(newYearlyBudget);
-
-                    Budget newMonthlyBudget = new()
-                    {
-                        DateFrom = new DateTime(expense.Date.Year, expense.Date.Month, 1),
-                        DateTo = new DateTime(expense.Date.Year, expense.Date.Month, DateTime.DaysInMonth(expense.Date.Year, expense.Date.Month)),
-                        State = BudgetState.Open,
-                        Type = BudgetType.Monthly,
-                        UserId = user.Id,
-                        User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Parent = newYearlyBudget,
-                        ParentId = newYearlyBudget.Id,
-                        Expenses = new List<Expense>()
-                    };
-                    newMonthlyBudget.Expenses.Add(expense);
-
-                    await CreateBudgetAsync(newMonthlyBudget);
-                    return newMonthlyBudget.Id;
-                }
+                monthlyBudget = await GetMonthlyBudgetAsync(user.Id, expense.Date);
+                return monthlyBudget.Id;
             }
         }
 
@@ -288,65 +220,35 @@ namespace Hays.Application.Services
             }
             else
             {
-                Budget yearlyBudget = await GetYearlyBudgetAsync(user.Id, income.Date.Year);
-                if (yearlyBudget is not null)
+                List<Budget> monthlyBudgets = new List<Budget>();
+                for (int i = 1; i <= 12; i++)
                 {
                     Budget newMonthlyBudget = new()
                     {
-                        DateFrom = new DateTime(income.Date.Year, income.Date.Month, 1),
-                        DateTo = new DateTime(income.Date.Year, income.Date.Month, DateTime.DaysInMonth(income.Date.Year, income.Date.Month)),
+                        DateFrom = new DateTime(income.Date.Year, i, 1),
+                        DateTo = new DateTime(income.Date.Year, i, DateTime.DaysInMonth(income.Date.Year, i)),
                         State = BudgetState.Open,
                         Type = BudgetType.Monthly,
                         UserId = user.Id,
                         User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Parent = yearlyBudget,
-                        ParentId = yearlyBudget.Id,
-                        Incomes = new List<Income>()
                     };
-                    newMonthlyBudget.Incomes.Add(income);
-
-                    await CreateBudgetAsync(newMonthlyBudget);
-                    return newMonthlyBudget.Id;
+                    monthlyBudgets.Add(newMonthlyBudget);
                 }
-                else
+
+                Budget newYearlyBudget = new()
                 {
-                    Budget newYearlyBudget = new()
-                    {
-                        DateFrom = new DateTime(income.Date.Year, 01, 01),
-                        DateTo = new DateTime(income.Date.Year, 12, 31),
-                        State = BudgetState.Open,
-                        Type = BudgetType.Yearly,
-                        UserId = user.Id,
-                        User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Incomes = new List<Income>()
-                    };
-                    newYearlyBudget.Incomes.Add(income);
+                    DateFrom = new DateTime(income.Date.Year, 01, 01),
+                    DateTo = new DateTime(income.Date.Year, 12, 31),
+                    State = BudgetState.Open,
+                    Type = BudgetType.Yearly,
+                    UserId = user.Id,
+                    Children = monthlyBudgets,
+                    User = user,
+                };
+                await CreateBudgetAsync(newYearlyBudget);
 
-                    await CreateBudgetAsync(newYearlyBudget);
-
-                    Budget newMonthlyBudget = new()
-                    {
-                        DateFrom = new DateTime(income.Date.Year, income.Date.Month, 1),
-                        DateTo = new DateTime(income.Date.Year, income.Date.Month, DateTime.DaysInMonth(income.Date.Year, income.Date.Month)),
-                        State = BudgetState.Open,
-                        Type = BudgetType.Monthly,
-                        UserId = user.Id,
-                        User = user,
-                        PlannedExpenses = 0,
-                        PlannedIncome = 0,
-                        Parent = newYearlyBudget,
-                        ParentId = newYearlyBudget.Id,
-                        Incomes = new List<Income>()
-                    };
-                    newMonthlyBudget.Incomes.Add(income);
-
-                    await CreateBudgetAsync(newMonthlyBudget);
-                    return newMonthlyBudget.Id;
-                }
+                monthlyBudget = await GetMonthlyBudgetAsync(user.Id, income.Date);
+                return monthlyBudget.Id;
             }
         }
 

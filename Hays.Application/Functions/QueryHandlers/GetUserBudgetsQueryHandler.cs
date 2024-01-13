@@ -53,7 +53,7 @@ namespace Hays.Application.Functions.QueryHandlers
                 if(budgetDTO.Type == BudgetDTO.BudgetType.Yearly)
                 {
                     Budget budget = budgets.FirstOrDefault(x => x.Id == budgetDTO.Id);
-                    budgetDTO.BudgetValue = budget.Children.Sum(x => x.BudgetValue);
+                    budgetDTO.BudgetValue = budget.Children?.Sum(x => x.BudgetValue) ?? decimal.Zero;
                 }
             }
             return budgetsDTO;

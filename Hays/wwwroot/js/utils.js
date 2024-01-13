@@ -68,6 +68,20 @@ const getExpenseDefinitions = async () => {
     return await res.json()
 }
 
+const getUserSpendingGoals = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/spendinggoals", {
+        method: "GET",
+        headers: {
+            Accept: "text/plain",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+        },
+    })
+
+    return await res.json()
+}
+
 function getSQLDate(date) {
     let day
     if (date.getDate() < 10) {

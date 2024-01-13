@@ -17,11 +17,6 @@ namespace Hays.Infrastructure.Configuration
                 .HasMaxLength(50);
 
             builder
-                .Property(x => x.Login)
-                .IsRequired()
-                .HasMaxLength(25);
-
-            builder
                 .Property(x => x.Password)
                 .IsRequired()
                 .HasMaxLength(255);
@@ -43,7 +38,7 @@ namespace Hays.Infrastructure.Configuration
 
             // Indexes
             builder
-                .HasIndex(x => x.Login)
+                .HasIndex(x => x.Email)
                 .IsUnique();
 
             // Relationships

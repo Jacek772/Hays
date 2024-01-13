@@ -77,19 +77,6 @@ namespace Hays.Application.Services
             }
         }
 
-        public async Task<bool> ExistsIncomeDefinitionAsync(string name)
-        {
-            IncomeDefinition incomeDefinition = await _applicationDbContext.IncomeDefinitions
-                .FirstOrDefaultAsync(x => x.Name == name);
-            return incomeDefinition is not null;
-        }
-
-        public async Task<IncomeDefinition> GetIncomeDefinitionAsync(int incomeDefinitionId)
-        {
-            return await _applicationDbContext.IncomeDefinitions
-                .FirstOrDefaultAsync(x => x.Id == incomeDefinitionId);
-        }
-
         public async Task<IncomeDefinition> GetIncomeDefinitionAsync(string name)
         {
             return await _applicationDbContext.IncomeDefinitions
